@@ -1,0 +1,7 @@
+#content {
+    display: flex;
+}
+
+textarea {
+    height: 400px;
+}

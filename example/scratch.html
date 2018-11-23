@@ -2,36 +2,36 @@
     <var name="a">5</var>
     <var name="b">'lalala'</var>
     <array name="ar">
-        <const value="1">
-        <const value="2">
-        <const value="'la'">
+        <const value="1"/>
+        <const value="2"/>
+        <const value="'la'"/>
     </array>
 
     <call name="print">
-        <const value="1">
-        <val name="a">
+        <const value="1"/>
+        <val name="a"/>
     </call>
 
     <func name="foo" params="param param2">
         <return>
-            <val name="param">
+            <val name="param"/>
             +
-            <val name="param">
+            <val name="param"/>
         </return>
     </func>
 
     <if>
-        <cond><val name="a"> + <val name="b"> < <const value="0"></cond>
+        <cond><val name="a"/> + <val name="b"/> < <const value="0"/></cond>
         <if-true>
             <call name="print">
-                <val name="a">
-                <val name="b">
+                <val name="a"/>
+                <val name="b"/>
             </call>
         </if-true>
         <if-else>
             <call name="print">
-                <val name="a">
-                <val name="b">
+                <val name="a"/>
+                <val name="b"/>
             </call>
         </if-else>
     </if>
@@ -40,10 +40,10 @@
         <cond>true</cond>
         <while-body>
             <call name="print">
-                <val name="a">
-                <val name="b">
+                <val name="a"/>
+                <val name="b"/>
             </call>
-            <break>
+            <break/>
         </while-body>
     </while>
 
@@ -52,17 +52,17 @@
             <var name="a"></var>
             <in>
                 <val-array>
-                    <const value="0">
-                    <const value="1">
-                    <const value="2">
-                    <const value="3">
+                    <const value="0"/>
+                    <const value="1"/>
+                    <const value="2"/>
+                    <const value="3"/>
                 </val-array>
             </in>
         </for-range>
         <for-body>
             <call name="print">
-                <val name="a">
-                <val name="b">
+                <val name="a"/>
+                <val name="b"/>
             </call>
         </for-body>
     </for>
@@ -72,14 +72,14 @@
             <var name="a"></var>
             <in>
                 <call name="range">
-                    <val name="a">
+                    <val name="a"/>
                 </call>
             </in>
         </for-range>
         <for-body>
             <call name="print">
-                <val name="a">
-                <val name="b">
+                <val name="a"/>
+                <val name="b"/>
             </call>
         </for-body>
     </for>
