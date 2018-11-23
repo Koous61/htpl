@@ -2,13 +2,13 @@
     <var name="a">5</var>
     <var name="b">'lalala'</var>
     <array name="ar">
-        <var const="1">
-        <var const="2">
-        <var const="'la'">
+        <const value="1">
+        <const value="2">
+        <const value="'la'">
     </array>
 
     <call name="print">
-        <val const="1">
+        <const value="1">
         <val name="a">
     </call>
 
@@ -21,7 +21,7 @@
     </func>
 
     <if>
-        <cond><val name="a"> + <val name="b"> < <val const="0"></cond>
+        <cond><val name="a"> + <val name="b"> < <const value="0"></cond>
         <if-true>
             <call name="print">
                 <val name="a">
@@ -52,10 +52,10 @@
             <var name="a"></var>
             <in>
                 <val-array>
-                    <val const="0">
-                    <val const="1">
-                    <val const="2">
-                    <val const="3">
+                    <const value="0">
+                    <const value="1">
+                    <const value="2">
+                    <const value="3">
                 </val-array>
             </in>
         </for-range>
