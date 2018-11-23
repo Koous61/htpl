@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("compile")
+@RequestMapping("execute")
 public class ExecuteController {
 	
 	private final ExecuteService executeService;
