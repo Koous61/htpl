@@ -1,0 +1,20 @@
+.header {
+    margin: 0;
+    height: 80px;
+    width: 100%;
+    background-color: #09d1cf;
+}
+
+.logo {
+
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu a {
+    margin-left: 3%;
+}

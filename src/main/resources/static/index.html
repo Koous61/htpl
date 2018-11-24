@@ -7,14 +7,27 @@
     <!--STYLES-->
     <link rel="stylesheet" type="text/css" href="css/angular.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/header.css">
 
     <!--LIBS-->
     <script language="JavaScript" src="lib/angular.js"></script>
+    <script language="JavaScript" src="lib/jquery.min.js"></script>
 
     <!--JS-->
     <script language="JavaScript" src="js/app.js"></script>
+    <script language="JavaScript" src="js/slowScroll.js"></script>
 </head>
 <body ng-controller="MainController" ng-cloak>
+
+<div class="header">
+    <div class="logo"></div>
+    <div class="menu">
+        <a href="#" title="Главная">Главная</a>
+        <a href="#" title="Документация">Документация</a>
+        <a href="#" title="О нас">О нас</a>
+    </div>
+</div>
+
 <div id="content">
     <label>
         <textarea id="code" style="resize:none" ng-model="code"></textarea>
@@ -24,5 +37,10 @@
     </label>
     <button value="Run" ng-click="execute()"></button>
 </div>
+
+<div class="footer">
+
+</div>
+
 </body>
 </html>
