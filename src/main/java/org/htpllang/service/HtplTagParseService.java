@@ -1,5 +1,6 @@
 package org.htpllang.service;
 
+import org.dom4j.Attribute;
 import org.dom4j.Element;
 import org.htpllang.exception.SyntaxException;
 import org.htpllang.functional.ThrowableFunction;
@@ -8,8 +9,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class HtplTagParseService {
@@ -24,6 +25,8 @@ public class HtplTagParseService {
 		tagMap.put("val", parseValTag());
 		tagMap.put("const", parseConstTag());
 		tagMap.put("array", parseArrayTag());
+		tagMap.put("call", parseCallTag());
+		tagMap.put("if", parseIfTag());
 	}
 	
 	public String parseTag(Element element) throws SyntaxException {
@@ -66,7 +69,14 @@ public class HtplTagParseService {
 	}
 	
 	private ThrowableFunction<Element, String, SyntaxException> parseValTag() {
-		return Element::getText;
+		return element -> {
+			Attribute nameAttribute = element.attribute("name");
+			if (nameAttribute != null) {
+				return nameAttribute.getValue();
+			} else {
+				return element.getText();
+			}
+		};
 	}
 	
 	private ThrowableFunction<Element, String, SyntaxException> parseConstTag() {
@@ -76,7 +86,8 @@ public class HtplTagParseService {
 	@SuppressWarnings("unchecked")
 	private ThrowableFunction<Element, String, SyntaxException> parseArrayTag() {
 		return element -> {
-			String arrayName = element.attribute("name").getValue();
+			String arrayName = Optional.ofNullable(element.attribute("name"))
+					.orElseThrow(() -> new SyntaxException("attribute \"name\" is required")).getValue();
 			
 			StringBuilder code = new StringBuilder();
 			code.append(arrayName)
@@ -87,6 +98,58 @@ public class HtplTagParseService {
 					.forEach(e -> code.append(parseTag((Element) e, false, "const", "val"))
 							.append(", "));
 			code.append("]");
+			
+			return code.toString();
+		};
+	}
+	
+	@SuppressWarnings("unchecked")
+	private ThrowableFunction<Element, String, SyntaxException> parseCallTag() {
+		return element -> {
+			String functionName = Optional.ofNullable(element.attribute("name"))
+					.orElseThrow(() -> new SyntaxException("attribute \"name\" is required")).getValue();
+			
+			StringBuilder code = new StringBuilder();
+			code.append(functionName)
+					.append("(");
+			element.content()
+					.stream()
+					.filter(e -> e instanceof Element)
+					.forEach(e -> code.append(parseTag((Element) e, false, "const", "val"))
+							.append(", "));
+			code.append(")");
+			
+			return code.toString();
+		};
+	}
+	
+	@SuppressWarnings("unchecked")
+	private ThrowableFunction<Element, String, SyntaxException> parseIfTag() {
+		return element -> {
+			if (element.content().size() < 2 && element.content().size() > 3)
+				throw new SyntaxException("tags <cond> and <if-true> are required within <if>");
+			if (((Element) element.content().get(0)).getName().equals("cond"))
+				throw new SyntaxException("tag <cond> is required within <if>");
+			if (((Element) element.content().get(1)).getName().equals("if-true"))
+				throw new SyntaxException("tag <if-true> is required within <if>");
+			
+			StringBuilder code = new StringBuilder();
+			code.append("if ");
+			element.content()
+					.stream()
+					.filter(e -> e instanceof Element)
+					.forEach(e -> {
+						if (((Element) e).getName().equals("cond")) {
+							code.append(parseTag((Element) e, false)).append(":\n");
+						}
+						if (((Element) e).getName().equals("if-true")) {
+							code.append(INDENT).append(parseTag((Element) e, true)).append("pass\n");
+						}
+						if (((Element) e).getName().equals("if-else")) {
+							code.append(INDENT).append(parseTag((Element) e, true)).append("pass\n");
+						}
+					});
+			code.append(")");
 			
 			return code.toString();
 		};
