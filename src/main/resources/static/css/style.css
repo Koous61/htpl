@@ -4,6 +4,7 @@
 
 body, html {
     margin: 0;
+    background-color: #eafff8;
 }
 
 #content {
@@ -15,4 +16,8 @@ body, html {
 
 textarea {
     height: 400px;
+}
+
+#code {
+
 }
