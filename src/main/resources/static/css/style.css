@@ -1,0 +1,50 @@
+#editor {
+    margin: 55px 0 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 50%;
+}
+
+#out {
+    margin: 55px 0 0 50%;
+    height: 100%;
+    width: 50%;
+    background-color: #272822;
+    position: fixed;
+    border-left: 2px groove #393939;
+}
+
+.navbar {
+    background: #393939;
+}
+
+.nav-link, .navbar-brand {
+    color: #777777;
+    cursor: pointer;
+}
+
+.nav-link {
+    margin-right: 1em !important;
+}
+
+.nav-link:hover {
+    color: #76b3b3;
+}
+
+.navbar-collapse {
+    justify-content: flex-end;
+}
+
+.navbar-toggler {
+    background: #fff !important;
+}
+
+.logo {
+    margin-top: 55px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
