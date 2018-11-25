@@ -21,7 +21,7 @@ public class HtplParseService {
 		this.htplTagParseService = htplTagParseService;
 	}
 	
-	public String parse(String htplCode) throws DocumentException, InvalidRootElementException, SyntaxException {
+	public String parse(String htplCode) throws DocumentException, SyntaxException {
 		Document document = new SAXReader().read(new StringReader(htplCode));
 		
 		Element htplTag = document.getRootElement();

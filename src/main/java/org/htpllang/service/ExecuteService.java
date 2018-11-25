@@ -2,7 +2,6 @@ package org.htpllang.service;
 
 import org.dom4j.DocumentException;
 import org.htpllang.exception.CompileException;
-import org.htpllang.exception.InvalidRootElementException;
 import org.htpllang.exception.SyntaxException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ public class ExecuteService {
 		this.compileService = compileService;
 	}
 	
-	public String execute(String htplCode) throws InvalidRootElementException, SyntaxException, CompileException {
+	public String execute(String htplCode) throws SyntaxException, CompileException {
 		try {
 			String pythonCode = htplParseService.parse(htplCode);
 			return compileService.compile(pythonCode);

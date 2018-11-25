@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
@@ -20,11 +21,22 @@ public class CompileService {
 	public String compile(String code) throws CompileException {
 		try {
 			String fileName = generateFileName();
-			BufferedWriter out = new BufferedWriter(new FileWriter(compiledPath + fileName));
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream(compiledPath + fileName), StandardCharsets.UTF_8
+			));
 			out.write(code);
 			out.close();
-			Process p = new ProcessBuilder(pyPath, compiledPath + fileName).start();
-			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			ProcessBuilder builder = new ProcessBuilder(pyPath,
+					compiledPath + fileName);
+			builder.redirectErrorStream(true);
+			Process p = builder.start();
+			try {
+				p.waitFor();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
+			
 			return in.lines().collect(Collectors.joining("\n"));
 		} catch (IOException e) {
 			throw new CompileException(e.getMessage());

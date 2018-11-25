@@ -1,7 +1,6 @@
 package org.htpllang.controller;
 
 import org.htpllang.exception.CompileException;
-import org.htpllang.exception.InvalidRootElementException;
 import org.htpllang.exception.SyntaxException;
 import org.htpllang.service.ExecuteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ public class ExecuteController {
 	}
 	
 	@PostMapping
-	public String compile(@RequestBody String htplCode) throws InvalidRootElementException, SyntaxException, CompileException {
+	public String compile(@RequestBody String htplCode) throws SyntaxException, CompileException {
 		return executeService.execute(htplCode);
 	}
 	
