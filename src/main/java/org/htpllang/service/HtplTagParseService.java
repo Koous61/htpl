@@ -29,6 +29,9 @@ public class HtplTagParseService {
 		tagMap.put("cond", parseCondTag());
 		tagMap.put("if-true", parseIfTrueTag());
 		tagMap.put("if-else", parseIfTrueTag());
+		tagMap.put("while", parseWhileTag());
+		tagMap.put("while-body", parseIfTrueTag());
+		tagMap.put("break", parseBreakTag());
 	}
 	
 	public String parseTag(Element element) throws SyntaxException {
@@ -186,10 +189,47 @@ public class HtplTagParseService {
 			element.content()
 					.stream()
 					.filter(e -> e instanceof Element)
-					.forEach(e -> code.append(parseTag((Element) e, true)));
+					.forEach(e -> code.append(INDENT).append(parseTag((Element) e, true)));
 			
 			return code.toString();
 		};
+	}
+	
+	@SuppressWarnings("unchecked")
+	private ThrowableFunction<Element, String, SyntaxException> parseWhileTag() {
+		return element -> {
+			List<Element> elements = (List<Element>) element.content()
+					.stream()
+					.filter(e -> e instanceof Element)
+					.collect(Collectors.toList());
+			if (elements.size() != 2)
+				throw new SyntaxException("tags <cond> and <while-body> are required within <while>");
+			if (!elements.get(0).getName().equals("cond"))
+				throw new SyntaxException("tag <cond> is required within <while>");
+			if (!elements.get(1).getName().equals("while-body"))
+				throw new SyntaxException("tag <while-body> is required within <while>");
+			
+			StringBuilder code = new StringBuilder();
+			code.append("while ");
+			element.content()
+					.stream()
+					.filter(e -> e instanceof Element)
+					.forEach(e -> {
+						if (((Element) e).getName().equals("cond")) {
+							code.append(parseTag((Element) e, false)).append(":\n");
+						}
+						if (((Element) e).getName().equals("while-body")) {
+							code.append(parseTag((Element) e, false))
+									.append(INDENT).append("pass\n");
+						}
+					});
+			
+			return code.toString();
+		};
+	}
+	
+	private ThrowableFunction<Element, String, SyntaxException> parseBreakTag() {
+		return element -> "break";
 	}
 	
 }
