@@ -2,15 +2,14 @@ package org.htpllang.service;
 
 import org.dom4j.Attribute;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.htpllang.exception.SyntaxException;
 import org.htpllang.functional.ThrowableFunction;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class HtplTagParseService {
@@ -27,6 +26,9 @@ public class HtplTagParseService {
 		tagMap.put("array", parseArrayTag());
 		tagMap.put("call", parseCallTag());
 		tagMap.put("if", parseIfTag());
+		tagMap.put("cond", parseCondTag());
+		tagMap.put("if-true", parseIfTrueTag());
+		tagMap.put("if-else", parseIfTrueTag());
 	}
 	
 	public String parseTag(Element element) throws SyntaxException {
@@ -126,11 +128,15 @@ public class HtplTagParseService {
 	@SuppressWarnings("unchecked")
 	private ThrowableFunction<Element, String, SyntaxException> parseIfTag() {
 		return element -> {
-			if (element.content().size() < 2 && element.content().size() > 3)
+			List<Element> elements = (List<Element>) element.content()
+					.stream()
+					.filter(e -> e instanceof Element)
+					.collect(Collectors.toList());
+			if (elements.size() != 2 && elements.size() != 3)
 				throw new SyntaxException("tags <cond> and <if-true> are required within <if>");
-			if (((Element) element.content().get(0)).getName().equals("cond"))
+			if (!elements.get(0).getName().equals("cond"))
 				throw new SyntaxException("tag <cond> is required within <if>");
-			if (((Element) element.content().get(1)).getName().equals("if-true"))
+			if (!elements.get(1).getName().equals("if-true"))
 				throw new SyntaxException("tag <if-true> is required within <if>");
 			
 			StringBuilder code = new StringBuilder();
@@ -143,13 +149,44 @@ public class HtplTagParseService {
 							code.append(parseTag((Element) e, false)).append(":\n");
 						}
 						if (((Element) e).getName().equals("if-true")) {
-							code.append(INDENT).append(parseTag((Element) e, true)).append("pass\n");
+							code.append(INDENT).append(parseTag((Element) e, false)).append(INDENT).append("pass\n");
 						}
+//						TODO: fix
 						if (((Element) e).getName().equals("if-else")) {
-							code.append(INDENT).append(parseTag((Element) e, true)).append("pass\n");
+							code.append("else:\n").append(INDENT).append(parseTag((Element) e, false)).append(INDENT).append("pass\n");
 						}
 					});
-			code.append(")");
+			
+			return code.toString();
+		};
+	}
+	
+	@SuppressWarnings("unchecked")
+	private ThrowableFunction<Element, String, SyntaxException> parseCondTag() {
+		return element -> {
+			StringBuilder code = new StringBuilder();
+			element.content()
+					.forEach(e -> {
+						if (e instanceof Element) {
+							code.append(parseTag((Element) e, false, "const", "val"));
+						}
+						if (e instanceof Node) {
+							code.append(((Node) e).getText().replaceAll("\n", "").trim());
+						}
+					});
+			
+			return code.toString();
+		};
+	}
+	
+	@SuppressWarnings("unchecked")
+	private ThrowableFunction<Element, String, SyntaxException> parseIfTrueTag() {
+		return element -> {
+			StringBuilder code = new StringBuilder();
+			element.content()
+					.stream()
+					.filter(e -> e instanceof Element)
+					.forEach(e -> code.append(parseTag((Element) e, true)));
 			
 			return code.toString();
 		};
