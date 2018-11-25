@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css?family=Titillium+Web');
+
+body {
+    font-family: 'Titillium Web', sans-serif;
+}
+
 #editor {
     margin: 55px 0 0;
     position: absolute;
@@ -15,6 +21,9 @@
     background-color: #272822;
     position: fixed;
     border-left: 2px groove #393939;
+    color: #ffffff;
+    font-size: 20px;
+    padding: 0 5px;
 }
 
 .navbar {
