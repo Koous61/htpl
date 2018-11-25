@@ -6,7 +6,7 @@ Innovative *programming* language with HTML syntax.
 ```xml
 <htpl>
     <call name="print">
-        <const value="'Hello world!'"></const>
+        <const value="'Hello world!'"/>
     </call>
 </htpl>
 ```
