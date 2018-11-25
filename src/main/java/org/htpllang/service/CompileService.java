@@ -23,7 +23,7 @@ public class CompileService {
 			BufferedWriter out = new BufferedWriter(new FileWriter(compiledPath + fileName));
 			out.write(code);
 			out.close();
-			Process p = Runtime.getRuntime().exec(pyPath + " " + compiledPath + fileName);
+			Process p = new ProcessBuilder(pyPath, compiledPath + fileName).start();
 			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			return in.lines().collect(Collectors.joining("\n"));
 		} catch (IOException e) {

@@ -26,6 +26,10 @@ body {
     padding: 0 5px;
 }
 
+.error {
+    color: darkred !important;
+}
+
 .navbar {
     background: #393939;
 }
