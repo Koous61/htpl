@@ -23,7 +23,7 @@ public class ExecuteService {
 	public String execute(String htplCode) throws SyntaxException, CompileException {
 		try {
 			String pythonCode = htplParseService.parse(htplCode);
-			return compileService.compile(pythonCode);
+			return compileService.compile(pythonCode, true);
 		} catch (DocumentException e) {
 			throw new SyntaxException(e.getMessage());
 		}

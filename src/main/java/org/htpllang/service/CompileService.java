@@ -19,6 +19,10 @@ public class CompileService {
 	private String compiledPath;
 	
 	public String compile(String code) throws CompileException {
+		return compile(code, false);
+	}
+	
+	public String compile(String code, boolean deleteFile) throws CompileException {
 		try {
 			String fileName = generateFileName();
 			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
@@ -36,6 +40,8 @@ public class CompileService {
 				e.printStackTrace();
 			}
 			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
+			
+			if (deleteFile) new File(compiledPath + fileName).delete();
 			
 			return in.lines().collect(Collectors.joining("\n"));
 		} catch (IOException e) {
