@@ -22,18 +22,18 @@
 
     <if>
         <cond><val name="a"/> + <val name="b"/> < <const value="0"/></cond>
-        <if-true>
+        <then>
             <call name="print">
                 <val name="a"/>
                 <val name="b"/>
             </call>
-        </if-true>
-        <if-else>
+        </then>
+        <else>
             <call name="print">
                 <val name="a"/>
                 <val name="b"/>
             </call>
-        </if-else>
+        </else>
     </if>
 
     <while>

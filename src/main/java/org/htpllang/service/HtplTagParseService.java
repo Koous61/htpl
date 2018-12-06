@@ -27,11 +27,14 @@ public class HtplTagParseService {
 		tagMap.put("call", parseCallTag());
 		tagMap.put("if", parseIfTag());
 		tagMap.put("cond", parseCondTag());
-		tagMap.put("if-true", parseIfTrueTag());
-		tagMap.put("if-else", parseIfTrueTag());
+		tagMap.put("then", parseBody());
+		tagMap.put("else", parseBody());
 		tagMap.put("while", parseWhileTag());
-		tagMap.put("while-body", parseIfTrueTag());
+		tagMap.put("while-body", parseBody());
 		tagMap.put("break", parseBreakTag());
+//		tagMap.put("for", parseForTag());
+//		tagMap.put("for-range", parseForRangeTag());
+//		tagMap.put("for-body", parseIfTrueTag());
 	}
 	
 	public String parseTag(Element element) throws SyntaxException {
@@ -139,26 +142,22 @@ public class HtplTagParseService {
 				throw new SyntaxException("tags <cond> and <if-true> are required within <if>");
 			if (!elements.get(0).getName().equals("cond"))
 				throw new SyntaxException("tag <cond> is required within <if>");
-			if (!elements.get(1).getName().equals("if-true"))
-				throw new SyntaxException("tag <if-true> is required within <if>");
+			if (!elements.get(1).getName().equals("then"))
+				throw new SyntaxException("tag <then> is required within <if>");
 			
 			StringBuilder code = new StringBuilder();
 			code.append("if ");
-			element.content()
-					.stream()
-					.filter(e -> e instanceof Element)
-					.forEach(e -> {
-						if (((Element) e).getName().equals("cond")) {
-							code.append(parseTag((Element) e, false)).append(":\n");
-						}
-						if (((Element) e).getName().equals("if-true")) {
-							code.append(INDENT).append(parseTag((Element) e, false)).append(INDENT).append("pass\n");
-						}
-//						TODO: fix
-						if (((Element) e).getName().equals("if-else")) {
-							code.append("else:\n").append(INDENT).append(parseTag((Element) e, false)).append(INDENT).append("pass\n");
-						}
-					});
+			elements.forEach(e -> {
+				if ("cond".equals(e.getName())) {
+					code.append(parseTag(e, false)).append(":\n");
+				}
+				if (e.getName().equals("then")) {
+					code.append(parseTag(e, false)).append(INDENT).append("pass\n");
+				}
+				if (e.getName().equals("else")) {
+					code.append("else:\n").append(parseTag(e, false)).append(INDENT).append("pass\n");
+				}
+			});
 			
 			return code.toString();
 		};
@@ -183,7 +182,7 @@ public class HtplTagParseService {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private ThrowableFunction<Element, String, SyntaxException> parseIfTrueTag() {
+	private ThrowableFunction<Element, String, SyntaxException> parseBody() {
 		return element -> {
 			StringBuilder code = new StringBuilder();
 			element.content()
@@ -230,6 +229,54 @@ public class HtplTagParseService {
 	
 	private ThrowableFunction<Element, String, SyntaxException> parseBreakTag() {
 		return element -> "break";
+	}
+	
+	@SuppressWarnings("unchecked")
+	private ThrowableFunction<Element, String, SyntaxException> parseForTag() {
+		return element -> {
+			List<Element> elements = (List<Element>) element.content()
+					.stream()
+					.filter(e -> e instanceof Element)
+					.collect(Collectors.toList());
+			if (elements.size() != 2)
+				throw new SyntaxException("tags <for-range> and <for-body> are required within <for>");
+			if (!elements.get(0).getName().equals("for-range"))
+				throw new SyntaxException("tag <for-range> is required within <for>");
+			if (!elements.get(1).getName().equals("for-body"))
+				throw new SyntaxException("tag <for-body> is required within <for>");
+			
+			StringBuilder code = new StringBuilder();
+			code.append("for ");
+			elements.forEach(e -> {
+				if (e.getName().equals("for-range")) {
+					code.append("for ").append(parseTag(e, false)).append(":\n");
+				}
+				if (e.getName().equals("for-body")) {
+					code.append(INDENT).append(parseTag(e, false)).append(INDENT).append("pass\n");
+				}
+			});
+			
+			return code.toString();
+		};
+	}
+	
+	@SuppressWarnings("unchecked")
+	private ThrowableFunction<Element, String, SyntaxException> parseForRangeTag() {
+		return element -> {
+			List<Element> elements = (List<Element>) element.content()
+					.stream()
+					.filter(e -> e instanceof Element)
+					.collect(Collectors.toList());
+			
+			if (elements.size() != 2)
+				throw new SyntaxException("tags <var> and <in> are required within <for-range>");
+			if (!elements.get(0).getName().equals("var"))
+				throw new SyntaxException("tag <var> is required within <for-range>");
+			if (!elements.get(1).getName().equals("in"))
+				throw new SyntaxException("tag <in> is required within <for-range>");
+			
+			return parseTag(elements.get(0)) + " in " + parseTag(elements.get(1));
+		};
 	}
 	
 }
