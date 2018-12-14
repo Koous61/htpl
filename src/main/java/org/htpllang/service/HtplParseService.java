@@ -25,7 +25,7 @@ public class HtplParseService {
 		Document document = new SAXReader().read(new StringReader(htplCode));
 		
 		Element htplTag = document.getRootElement();
-		return parse(htplTag);
+		return parse(htplTag).trim();
 	}
 	
 	private String parse(Element element) throws SyntaxException {
